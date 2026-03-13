@@ -1,0 +1,55 @@
+server:
+  port: 8888
+
+spring:
+    cloud:
+        gateway:
+            # cors 처리 (각 서비스는 브라우저와 직접 통신하지 않으므로 단일진입점인 gateway가 담당)
+            globalcors:
+                cors-configurations: 
+                    '[/**]':
+                        allowedOrigins:
+                            - 'http://localhost:3000'
+                        allowedMethods: '*'
+                        allowedHeaders: '*'
+                        exposedHeaders: '*'
+                        allowedCredentials: true 
+            
+            # eureka server에 등록된 client를 찾아 사용자의 uri_pattern을 매핑
+            routes: 
+                - id: user-service
+                  predicates: 
+                    - Path=/user-service/**  
+                  filters:
+                    # 첫번째 접두어 제거 
+                    # http://server.xxx.shop/user-service/users/login -> http://server.xxx.shop/users/login
+                    - StripPrefix=1
+                  uri: lb://user-service
+
+                - id: product-service
+                  predicates: 
+                    - Path=/product-service/**  
+                  filters:
+                    # 첫번째 접두어 제거 
+                    # http://server.xxx.shop/order-service/products/create -> http://server.xxx.shop/products/create
+                    - StripPrefix=1
+                  uri: lb://product-service
+
+                - id: order-service
+                  predicates: 
+                    - Path=/order-service/**  
+                  filters:
+                    # 첫번째 접두어 제거 
+                    # http://server.xxx.shop/order-service/orders/create -> http://server.xxx.shop/orders/create
+                    - StripPrefix=1
+                  uri: lb://order-service
+
+# token 
+jwt:
+    secret: wlguss-jihyun-springsecurity-key-test-forjwtprovider-134679
+
+# eureka client 설정 (= eureka server에 등록하는 과정)
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://localhost:8761/eureka
