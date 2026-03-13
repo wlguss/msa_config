@@ -23,7 +23,7 @@ spring:
         username: root 
         password: 1215
     jpa:
-        database: mariadb
+        database: mysql
         database-platform: org.hibernate.dialect.MariaDBDialect
         hibernate: 
             # create(-> 서버 기동 시점에 생성된 entity에 매핑되는 테이블 자동 생성), create-drop, update, none
